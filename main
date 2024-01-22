@@ -8,6 +8,7 @@ class Player:
         self.health = 100
         self.inventory = {'gold': 0, 'food': 0, 'weapons': 0}
 
+
     def show_stats(self):
         self.clear_console()
         print(f"{self.name}'s Stats:")
@@ -15,8 +16,19 @@ class Player:
         print("Inventory:")
         for item, count in self.inventory.items():
             print(f"  {item}: {count}")
+        print("If you want to restore your health (+7) print food, it will cost 10 food")    
+        if input().lower() == 'food':
+            self.heal() 
+        
         input("\nPress Enter to continue...")
 
+    def heal(self):  
+        if self.inventory['food'] < 7:
+            print("Not enough food")
+        else:
+            self.inventory['food'] -= 10
+            self.health += 7
+        
     def go_raid(self):
         self.clear_console()
         print(f"{self.name} is going on a raid...")
