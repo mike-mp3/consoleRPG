@@ -1,4 +1,6 @@
 import os
+import sys
+import time
 import random
 import platform
 
@@ -10,17 +12,17 @@ class Player:
 
 
     def show_stats(self):
+        visual.clock()
         self.clear_console()
         print(f"{self.name}'s Stats:")
         print(f"Health: {self.health}")
         print("Inventory:")
         for item, count in self.inventory.items():
             print(f"  {item}: {count}")
-        print("If you want to restore your health (+7) print food, it will cost 10 food")    
-        if input().lower() == 'food':
+        print("If you want to restore your health (+7) print +, it will cost 10 food")    
+        if input().lower() == '+':
             self.heal() 
-        
-        input("\nPress Enter to continue...")
+
 
     def heal(self):  
         if self.inventory['food'] < 7:
@@ -32,12 +34,13 @@ class Player:
     def go_raid(self):
         self.clear_console()
         print(f"{self.name} is going on a raid...")
+        visual.square()
         raid_outcome = random.choice(['success', 'failure'])
         if raid_outcome == 'success':
-            print("Raid successful! You found some resources.")
+            print("\nRaid successful! You found some resources.")
             self.gain_resources()
         else:
-            print("Raid failed! You took some damage.")
+            print("\nRaid failed! You took some damage.")
             self.take_damage(20)
         input("\nPress Enter to continue...")
 
@@ -46,11 +49,11 @@ class Player:
                 'food': random.randint(5, 20),
                 'weapons': random.randint(1, 5)}
 
-        print("You gained the following resources:")
+        print("\nYou gained the following resources:")
         for item, count in loot.items():
             print(f"  {item}: {count}")
             self.inventory[item] += count
-        input("\nPress Enter to continue...")
+        #input("\nPress Enter to continue...")
 
     def take_damage(self, damage):
         self.health -= damage
@@ -58,6 +61,13 @@ class Player:
             print(f"{self.name} has died!")
             input("\nPress Enter to exit...")
             exit()
+    
+    def display_health(player):
+            if player.health < 40:
+                sys.stdout.write("\r\033[91m❤ {}\033[0m".format(player.health))
+            else:
+                sys.stdout.write("\r\033[92m❤ {}\033[0m".format(player.health))
+            sys.stdout.flush()
 
     def clear_console(self):
         system = platform.system().lower()
@@ -66,12 +76,35 @@ class Player:
         else:
             os.system('clear')
 
+class visual:
+    def clock():
+        animation_chars = "|/-\\"
+        for i in range(20):
+            time.sleep(0.05)
+            sys.stdout.write("\r" + "Loading " + animation_chars[i % len(animation_chars)])
+            sys.stdout.flush()
+
+        print("\nLoading complete!")
+        
+    def square():
+        squares = ["[   ]", "[=  ]", "[== ]", "[===]"]
+        for _ in range(3):
+            for square in squares:
+                time.sleep(0.1)
+                sys.stdout.write("\r" + "Loading " + square)
+                sys.stdout.flush()
+        
+        print("\nLoading complete!")
+
+
+
 def main():
     player_name = input("Enter your character's name: ")
     player = Player(player_name)
 
     while True:
         player.clear_console()
+        player.display_health()
         print("\n1. Show Stats")
         print("2. Go on Raid")
         print("3. Exit")
